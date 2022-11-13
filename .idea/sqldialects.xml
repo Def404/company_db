@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/create .sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/dataFilling.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/index.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/json.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/role.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/save_to_svg.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/test.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/triggers.sql" dialect="PostgreSQL" />
+  </component>
+</project>
