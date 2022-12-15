@@ -27,6 +27,12 @@ GRANT INSERT ON
     task
 TO manager;
 
+GRANT DELETE ON
+    task
+    TO manager;
+
+
+REVOKE UPDATE (executor_id) ON task FROM manager;
 GRANT UPDATE
     (executor_id)
 ON task
@@ -51,28 +57,39 @@ CREATE POLICY select_of_task ON task
     );
 /* Просматривать задание может лиюо автор, либо исполнитель */
 
+
 CREATE POLICY update_task_status ON task
     FOR UPDATE
     TO manager, worker
-    USING (true)
-    WITH CHECK
-    (
-        (task.status_id != 3) AND
-        (
+    USING ((task.status_id <= 3) AND (
+
             (SELECT employee_login
              FROM employee
              WHERE (task.author_id = employee.employee_id)) = current_user OR
             (SELECT employee_login
              FROM employee
              WHERE (task.executor_id = employee.employee_id)) = current_user
-        )
-    );
+        ));
+
+
+
 /* Изменять задание как выполненое может только автор или исполнитель (выполененое задание изменять нельзя) */
+CREATE POLICY insert_task ON task
+    FOR INSERT
+    TO manager
+    WITH CHECK (true);
 
+CREATE POLICY delete_task ON task
+FOR  DELETE
+TO manager, worker
+USING (true);
 
+CREATE ROLE smirnov WITH LOGIN PASSWORD '_Te_53#df10';
+GRANT manager TO smirnov;
 
-CREATE ROLE smirnov WITH LOGIN PASSWORD '_te_53#df10';
-GRANT worker TO smirnov;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO manager;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO worker;
+GRANT USAGE, SELECT ON ALl SEQUENCES IN SCHEMA public TO company_auth_role;
 
 CREATE ROLE mikheev WITH LOGIN PASSWORD '_saf#4324';
 GRANT manager TO mikheev;
@@ -83,34 +100,3 @@ GRANT worker TO ershova;
 CREATE ROLE kuznetsova WITH LOGIN PASSWORD '_2144_sdad_54';
 GRANT manager TO kuznetsova;
 
-
-
-
-/* ЭТО НАДО УДАЛИТЬ */
-GRANT UPDATE
-    (execution_period, completion_date, priority_id, status_id)
-ON task
-TO manager, worker;
-/* Дату выполения,  период,  приоритет, статутс может изменять manager и worker */
-
-REVOKE UPDATE (execution_period, completion_date, priority_id, status_id)
-ON task
-FROM manager, worker;
-
-
-
-/* НАДО УДАЛИТЬ */
-CREATE POLICY update_task  ON task
-    FOR UPDATE
-    TO manager, worker
-    USING (true)
-    WITH CHECK
-    (
-        (SELECT employee_login
-        FROM employee
-        WHERE task.author_id = employee.employee_id) = current_user
-    );
-/* Автор может менять поля задачи */
-DROP POLICY update_task ON task;
-
-(SELECT COUNT(*) FROM pg_roles WHERE rolname='s');
